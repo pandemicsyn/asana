@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="python-asana : Python Asana API binding and sample cli " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>python-asana</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/pandemicsyn/asana">View on GitHub</a>
+
+          <h1 id="project_title">python-asana</h1>
+          <h2 id="project_tagline">Python Asana API binding and sample cli </h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/pandemicsyn/asana/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/pandemicsyn/asana/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Asana python api &amp; CLI</h1>
+
+<p>python wrapper for the <a href="http://asana.com">Asana API</a> and a sample CLI tool for 
+<a href="http://asana.com">Asana</a> itself.</p>
+
+<p>A work in progress. Working so far:</p>
+
+<ul>
+<li>get_user_info</li>
+<li>list_users</li>
+<li>list_tasks</li>
+<li>get_task</li>
+<li>list_projects</li>
+<li>get_project</li>
+<li>get_project_tasks</li>
+<li>list_stories</li>
+<li>get_story</li>
+<li>list_workspaces</li>
+<li>create_task</li>
+<li>update_task</li>
+<li>create_project</li>
+<li>update_project*</li>
+<li>update_workspace*</li>
+<li>add_project_task</li>
+<li>rm_project_task</li>
+<li>add_story</li>
+</ul><p>Todo:</p>
+
+<ul>
+<li>All the things!</li>
+<li>Especially error and response checkings.</li>
+</ul><p>Sample:</p>
+
+<pre><code>from asana import AsanaAPI()
+asana = AsanaAPI('YourAsanaAPIKey', debug=True)
+myspaces = asana.list_workspaces()  #Result: [{u'id': 123456789, u'name': u'asanapy'}]
+#create a new project
+asana.create_project('test project', 'notes for test project', myspaces[0]['id'])
+#create a new task
+asana.create_task('yetanotherapitest', myspaces[0]['id'], assignee_status='later', notes='some notes')
+#add a story to task
+asana.add_story(mytask, 'omgwtfbbq')
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">python-asana maintained by <a href="https://github.com/pandemicsyn">pandemicsyn</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

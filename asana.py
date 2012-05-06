@@ -3,10 +3,12 @@
 import requests
 import optparse
 import getpass
+import time
 try:
     import simplejson as json
 except ImportError:
     import json
+from pprint import pprint
 
 class AsanaAPI(object):
 
@@ -32,7 +34,25 @@ class AsanaAPI(object):
         r = requests.get(target, auth=(self.apikey, ""))
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'] == 'application/json':
-                return json.loads(r.text)
+                return json.loads(r.text)['data']
+            else:
+                raise Exception('Did not receive json from api')
+        else:
+            if self.debug:
+                print "-> Got: %s" % r.status_code
+                print "-> %s" % r.text
+            raise Exception('Received non 2xx or 404 status code on call')
+
+    def _asana_post(self, api_target, data):
+        target = "/".join([self.aurl, api_target])
+        if self.debug:
+            print "-> Posting to: %s" % target
+            print "-> Post payload:"
+            pprint(data)
+        r = requests.post(target, auth=(self.apikey, ""), data=data)
+        if self._ok_status(r.status_code) and r.status_code is not 404:
+            if r.headers['content-type'] == 'application/json':
+                return json.loads(r.text)['data']
             else:
                 raise Exception('Did not receive json from api')
         else:
@@ -70,23 +90,48 @@ class AsanaAPI(object):
         target = "tasks?workspace=%s&assignee=%s" % (workspace, assignee)
         return self._asana(target)
 
+    def get_task(self, task_id):
+        return self._asana("tasks/%s" % task_id)
+
     def list_projects(self, workspace=None):
         if workspace:
             return self._asana('workspaces/%s/projects' % workspace)
         else:
             return self._asana('projects')
 
-    def project(self, project_id):
+    def get_project(self, project_id):
         return self._asana('projects/%s' % project_id)
 
-    def project_tasks(self, project_id):
+    def get_project_tasks(self, project_id):
         return self._asana('projects/%s/tasks' % project_id)
 
-    def task_stories(self, task_id):
+    def list_stories(self, task_id):
         return self._asana('tasks/%s/stories' % task_id)
 
-    def story(self, story_id):
+    def get_story(self, story_id):
         return self._asana('stories/%s' % story_id)
 
-    def workspaces(self):
+    def list_workspaces(self):
         return self._asana('workspaces')
+
+    def create_task(self, name, workspace, assignee=None, assignee_status=None,
+                    completed=False, due_on=None, followers=None, notes=None):
+        #payload base
+        payload = {'assignee': assignee or 'me', 'name': name, 
+                   'workspace': workspace}
+        if assignee_status in ['inbox', 'later', 'today', 'upcoming']:
+            payload['assignee_status'] = assignee_status
+        if completed:
+            payload['completed'] = 'true'
+        if due_on:
+            try:
+                vd = time.strptime(due_on, '%Y-%m-%d')
+            except ValueError:
+                raise Exception('Bad task due date: %s' % due_on)
+        if followers:
+            for pos, person in enumerate(followers):
+                payload['follower[%d]' % pos] = person
+        if notes:
+            payload['notes'] = notes
+        return self._asana_post('tasks', payload)
+

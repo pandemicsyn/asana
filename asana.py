@@ -87,29 +87,29 @@ class AsanaAPI(object):
                 return self._asana('users')
 
     def list_tasks(self, workspace, assignee):
-        target = "tasks?workspace=%s&assignee=%s" % (workspace, assignee)
+        target = "tasks?workspace=%d&assignee=%s" % (workspace, assignee)
         return self._asana(target)
 
     def get_task(self, task_id):
-        return self._asana("tasks/%s" % task_id)
+        return self._asana("tasks/%d" % task_id)
 
     def list_projects(self, workspace=None):
         if workspace:
-            return self._asana('workspaces/%s/projects' % workspace)
+            return self._asana('workspaces/%d/projects' % workspace)
         else:
             return self._asana('projects')
 
     def get_project(self, project_id):
-        return self._asana('projects/%s' % project_id)
+        return self._asana('projects/%d' % project_id)
 
     def get_project_tasks(self, project_id):
-        return self._asana('projects/%s/tasks' % project_id)
+        return self._asana('projects/%d/tasks' % project_id)
 
     def list_stories(self, task_id):
-        return self._asana('tasks/%s/stories' % task_id)
+        return self._asana('tasks/%d/stories' % task_id)
 
     def get_story(self, story_id):
-        return self._asana('stories/%s' % story_id)
+        return self._asana('stories/%d' % story_id)
 
     def list_workspaces(self):
         return self._asana('workspaces')
@@ -135,3 +135,30 @@ class AsanaAPI(object):
             payload['notes'] = notes
         return self._asana_post('tasks', payload)
 
+    def update_task(self, name, workspace, assignee=None, assignee_status=None,
+                    completed=False, due_on=None, followers=None, notes=None):
+        #TODO: All the things!
+        return None
+
+    def create_project(self, name, notes, workspace, archived=False):
+        payload = {'name': name, 'notes': notes, 'workspace': workspace}
+        if archived:
+            payload['archived': 'true']
+        return self._asana_post('projects', payload)
+
+    def update_project(self):
+        #TODO: All the things!
+        return None
+
+    def update_workspace(self):
+        #TODO: All the things!
+        return None
+
+    def add_project_task(self, task_id, project_id):
+        return self._asana_post('tasks/%d/addProject' % task_id, {'project': project_id})
+
+    def rm_project_task(self, task_id, project_id):
+        return self._asana_post('tasks/%d/removeProject' % task_id, {'project': project_id})
+
+    def add_story(self, task_id, text):
+        return self._asana_post('tasks/%d/stories' % task_id, {'text': text})

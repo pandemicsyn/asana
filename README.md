@@ -23,6 +23,9 @@ A work in progress. Working so far:
 - add_project_task
 - rm_project_task
 - add_story
+- get_tags
+- get_tag_tasks
+- add_tag_task
 
 Todo:
 

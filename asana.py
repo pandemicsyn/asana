@@ -4,6 +4,7 @@ import requests
 import optparse
 import getpass
 import time
+
 try:
     import simplejson as json
 except ImportError:
@@ -133,6 +134,7 @@ class AsanaAPI(object):
                 payload['follower[%d]' % pos] = person
         if notes:
             payload['notes'] = notes
+
         return self._asana_post('tasks', payload)
 
     def update_task(self, name, workspace, assignee=None, assignee_status=None,
@@ -162,3 +164,12 @@ class AsanaAPI(object):
 
     def add_story(self, task_id, text):
         return self._asana_post('tasks/%d/stories' % task_id, {'text': text})
+
+    def add_tag_task(self, task_id, tag_id):
+        return self._asana_post('tasks/%d/addTag' % task_id, {'tag': tag_id})
+
+    def get_tags(self, workspace):
+        return self._asana('workspaces/%d/tags' % workspace)
+
+    def get_tag_tasks(self, tag_id):
+        return self._asana('tags/%d/tasks' % tag_id)

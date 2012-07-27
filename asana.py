@@ -78,7 +78,7 @@ class AsanaAPI(object):
 
     def list_users(self, workspace=None, filters=[]):
         if workspace:
-            return "Not yet available"
+            return self._asana('workspaces/%s/users' % workspace)
         else:
             if filters:
                 fkeys = [x.strip().lower() for x in filters]

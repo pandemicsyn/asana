@@ -34,13 +34,18 @@ Todo:
 
 Sample:
 
-    from asana import AsanaAPI()
-    asana = AsanaAPI('YourAsanaAPIKey', debug=True)
-    myspaces = asana.list_workspaces()  #Result: [{u'id': 123456789, u'name': u'asanapy'}]
-    #create a new project
-    asana.create_project('test project', 'notes for test project', myspaces[0]['id'])
-    #create a new task
-    asana.create_task('yetanotherapitest', myspaces[0]['id'], assignee_status='later', notes='some notes')
-    #add a story to task
-    asana.add_story(mytask, 'omgwtfbbq')
+    import asana
+    asana_api = asana.AsanaAPI('YourAsanaAPIKey', debug=True)
+
+    # see your workspaces
+    myspaces = asana_api.list_workspaces()  #Result: [{u'id': 123456789, u'name': u'asanapy'}]
+
+    # create a new project
+    asana_api.create_project('test project', 'notes for test project', myspaces[0]['id'])
+
+    # create a new task
+    asana_api.create_task('yetanotherapitest', myspaces[0]['id'], assignee_status='later', notes='some notes')
+
+    # add a story to task
+    asana_api.add_story(mytask, 'omgwtfbbq')
 

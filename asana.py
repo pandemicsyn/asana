@@ -131,7 +131,7 @@ class AsanaAPI(object):
                 raise Exception('Bad task due date: %s' % due_on)
         if followers:
             for pos, person in enumerate(followers):
-                payload['follower[%d]' % pos] = person
+                payload['followers[%d]' % pos] = person
         if notes:
             payload['notes'] = notes
 

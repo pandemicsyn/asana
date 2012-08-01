@@ -26,6 +26,7 @@ A work in progress. Working so far:
 - get_tags
 - get_tag_tasks
 - add_tag_task
+- add_project_to_task
 
 Todo:
 

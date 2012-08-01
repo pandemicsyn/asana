@@ -118,7 +118,7 @@ class AsanaAPI(object):
     def create_task(self, name, workspace, assignee=None, assignee_status=None,
                     completed=False, due_on=None, followers=None, notes=None):
         #payload base
-        payload = {'assignee': assignee or 'me', 'name': name, 
+        payload = {'assignee': assignee or 'me', 'name': name,
                    'workspace': workspace}
         if assignee_status in ['inbox', 'later', 'today', 'upcoming']:
             payload['assignee_status'] = assignee_status
@@ -141,6 +141,10 @@ class AsanaAPI(object):
                     completed=False, due_on=None, followers=None, notes=None):
         #TODO: All the things!
         return None
+
+    def add_project_to_task(self, project_id, task_id):
+        payload = {'project': project_id}
+        return self._asana_post('tasks/%s/addProject' % task_id, payload)
 
     def create_project(self, name, notes, workspace, archived=False):
         payload = {'name': name, 'notes': notes, 'workspace': workspace}

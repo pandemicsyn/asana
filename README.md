@@ -1,7 +1,7 @@
 # Asana python api & CLI
+https://github.com/pandemicsyn/asana/
 
-python wrapper for the [Asana API](http://asana.com) and a sample CLI tool for 
-[Asana](http://asana.com) itself.
+python wrapper for the [Asana API](http://asana.com) and a sample CLI tool for [Asana](http://asana.com) itself.
 
 A work in progress. Working so far:
 

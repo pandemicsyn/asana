@@ -62,6 +62,24 @@ class AsanaAPI(object):
                 print "-> %s" % r.text
             raise Exception("Asana API error: %s" % r.text)
 
+    def _asana_put(self, api_target, data):
+        target = "/".join([self.aurl, api_target])
+        if self.debug:
+            print "-> PUTting to: %s" % target
+            print "-> PUT payload:"
+            pprint(data)
+        r = requests.put(target, auth=(self.apikey, ""), data=data)
+        if self._ok_status(r.status_code) and r.status_code is not 404:
+            if r.headers['content-type'].split(';')[0] == 'application/json':
+                return json.loads(r.text)['data']
+            else:
+                raise Exception('Did not receive json from api: %s' % str(r))
+        else:
+            if self.debug:
+                print "-> Got: %s" % r.status_code
+                print "-> %s" % r.text
+            raise Exception("Asana API error: %s" % r.text)
+
     def _ok_status(self, status_code):
         if status_code/200 is 1:
             return True
@@ -137,10 +155,34 @@ class AsanaAPI(object):
 
         return self._asana_post('tasks', payload)
 
-    def update_task(self, name, workspace, assignee=None, assignee_status=None,
-                    completed=False, due_on=None, followers=None, notes=None):
+    def update_task(self, task, name=None, workspace=None, assignee=None, 
+            assignee_status=None, completed=False, due_on=None, followers=None,
+            notes=None):
         #TODO: All the things!
-        return None
+        payload = {}
+        if name:
+            payload['name'] = name
+        if workspace:
+            payload['workspace'] = workspace
+        if assignee:
+            payload['assignee'] = assignee
+        if assignee_status:
+            payload['assignee_status'] = assignee_status
+        if completed:
+            payload['completed'] = completed
+        if due_on:
+            try:
+                vd = time.strptime(due_on, '%Y-%m-%d')
+                payload['due_on'] = due_on
+            except ValueError:
+                raise Exception('Bad task due date: %s' % due_on)
+        if followers:
+            for pos, person in enumerate(followers):
+                payload['followers[%d]' % pos] = person
+        if notes:
+            payload['notes'] = notes
+
+        return self._asana_put('tasks/%s' % task, payload)
 
     def add_project_to_task(self, project_id, task_id):
         payload = {'project': project_id}

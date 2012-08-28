@@ -184,12 +184,10 @@ class AsanaAPI(object):
 
         return self._asana_put('tasks/%s' % task, payload)
 
-    def add_project_to_task(self, project_id, task_id):
-        payload = {'project': project_id}
-        return self._asana_post('tasks/%s/addProject' % task_id, payload)
-
-    def create_project(self, name, notes, workspace, archived=False):
-        payload = {'name': name, 'notes': notes, 'workspace': workspace}
+    def create_project(self, name, workspace, notes=None, archived=False):
+        payload = {'name': name, 'workspace': workspace}
+        if notes:
+            payload['notes': notes]
         if archived:
             payload['archived': 'true']
         return self._asana_post('projects', payload)

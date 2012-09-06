@@ -155,15 +155,11 @@ class AsanaAPI(object):
 
         return self._asana_post('tasks', payload)
 
-    def update_task(self, task, name=None, workspace=None, assignee=None, 
-            assignee_status=None, completed=False, due_on=None, followers=None,
-            notes=None):
-        #TODO: All the things!
+    def update_task(self, task, name=None, assignee=None, assignee_status=None,
+        completed=False, due_on=None, notes=None):
         payload = {}
         if name:
             payload['name'] = name
-        if workspace:
-            payload['workspace'] = workspace
         if assignee:
             payload['assignee'] = assignee
         if assignee_status:
@@ -176,9 +172,6 @@ class AsanaAPI(object):
                 payload['due_on'] = due_on
             except ValueError:
                 raise Exception('Bad task due date: %s' % due_on)
-        if followers:
-            for pos, person in enumerate(followers):
-                payload['followers[%d]' % pos] = person
         if notes:
             payload['notes'] = notes
 
@@ -187,18 +180,24 @@ class AsanaAPI(object):
     def create_project(self, name, workspace, notes=None, archived=False):
         payload = {'name': name, 'workspace': workspace}
         if notes:
-            payload['notes': notes]
+            payload['notes'] = notes
         if archived:
-            payload['archived': 'true']
+            payload['archived'] = 'true'
         return self._asana_post('projects', payload)
 
-    def update_project(self):
-        #TODO: All the things!
-        return None
+    def update_project(self, project_id, name=None, notes=None, archived=False):
+        payload = {}
+        if name:
+            payload['name'] = name
+        if notes:
+            payload['notes'] = notes
+        if archived:
+            payload['archived'] = 'true'
+        return self._asana_put('projects/%s' % project_id, payload)
 
-    def update_workspace(self):
-        #TODO: All the things!
-        return None
+    def update_workspace(self, workspace_id, name):
+        payload = {'name': name}
+        return self._asana_put('workspaces/%s' % workspace_id, payload)
 
     def add_project_task(self, task_id, project_id):
         return self._asana_post('tasks/%d/addProject' % task_id, {'project': project_id})

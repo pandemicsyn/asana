@@ -1,4 +1,4 @@
-# Asana python api & CLI
+# Asana python api 
 
 python wrapper for the [Asana API](http://asana.com)
 
@@ -35,7 +35,7 @@ Todo:
 
 Sample:
 
-    import asana
+    from asana import asana
     asana_api = asana.AsanaAPI('YourAsanaAPIKey', debug=True)
 
     # see your workspaces

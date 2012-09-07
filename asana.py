@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 import requests
-import optparse
-import getpass
 import time
 
 try:
@@ -10,6 +8,7 @@ try:
 except ImportError:
     import json
 from pprint import pprint
+
 
 class AsanaAPI(object):
 
@@ -81,9 +80,9 @@ class AsanaAPI(object):
             raise Exception("Asana API error: %s" % r.text)
 
     def _ok_status(self, status_code):
-        if status_code/200 is 1:
+        if status_code / 200 is 1:
             return True
-        elif status_code/400 is 1:
+        elif status_code / 400 is 1:
             if status_code is 404:
                 return True
             else:
@@ -156,7 +155,7 @@ class AsanaAPI(object):
         return self._asana_post('tasks', payload)
 
     def update_task(self, task, name=None, assignee=None, assignee_status=None,
-        completed=False, due_on=None, notes=None):
+                    completed=False, due_on=None, notes=None):
         payload = {}
         if name:
             payload['name'] = name
@@ -185,7 +184,8 @@ class AsanaAPI(object):
             payload['archived'] = 'true'
         return self._asana_post('projects', payload)
 
-    def update_project(self, project_id, name=None, notes=None, archived=False):
+    def update_project(self, project_id, name=None, notes=None,
+                       archived=False):
         payload = {}
         if name:
             payload['name'] = name
@@ -200,10 +200,12 @@ class AsanaAPI(object):
         return self._asana_put('workspaces/%s' % workspace_id, payload)
 
     def add_project_task(self, task_id, project_id):
-        return self._asana_post('tasks/%d/addProject' % task_id, {'project': project_id})
+        return self._asana_post('tasks/%d/addProject' % task_id,
+                                {'project': project_id})
 
     def rm_project_task(self, task_id, project_id):
-        return self._asana_post('tasks/%d/removeProject' % task_id, {'project': project_id})
+        return self._asana_post('tasks/%d/removeProject' % task_id,
+                                {'project': project_id})
 
     def add_story(self, task_id, text):
         return self._asana_post('tasks/%d/stories' % task_id, {'text': text})

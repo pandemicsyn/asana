@@ -2,7 +2,8 @@
 
 python wrapper for the [Asana API](http://asana.com)
 
-A work in progress, but here's what's present so far:
+Documentation is available at: [AsanaAPI](http://asana.readthedocs.org/en/latest/index.html)
+This project is a work in progress. Here's what's currently available:
 
 - add_project_task
 - add_story

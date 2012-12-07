@@ -209,7 +209,8 @@ class AsanaAPI(object):
             payload['completed'] = 'true'
         if due_on:
             try:
-                vd = time.strptime(due_on, '%Y-%m-%d')
+                time.strptime(due_on, '%Y-%m-%d')
+                payload['due_on'] = due_on
             except ValueError:
                 raise Exception('Bad task due date: %s' % due_on)
         if followers:
@@ -243,7 +244,7 @@ class AsanaAPI(object):
             payload['completed'] = completed
         if due_on:
             try:
-                vd = time.strptime(due_on, '%Y-%m-%d')
+                time.strptime(due_on, '%Y-%m-%d')
                 payload['due_on'] = due_on
             except ValueError:
                 raise Exception('Bad task due date: %s' % due_on)

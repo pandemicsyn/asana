@@ -147,6 +147,12 @@ class AsanaAPI(object):
         :param task_id: id# of task"""
         return self._asana("tasks/%d" % task_id)
 
+    def get_subtasks(self, task_id):
+        """Get subtasks associated with a given task
+
+        :param task_id id# of task"""
+        return self._asana("tasks/%d/subtasks" % task_id)
+
     def list_projects(self, workspace=None):
         """"List projects in a workspace
 

@@ -9,13 +9,15 @@ This project is a work in progress. Here's what's currently available:
 - add_story
 - add_tag_task
 - create_project
+- create_tag
 - create_task
 - get_basic_auth
 - get_project
 - get_project_tasks
 - get_story
-- get_tags
+- get_subtasks
 - get_tag_tasks
+- get_tags
 - get_task
 - list_projects
 - list_stories

@@ -7,8 +7,12 @@ try:
     import simplejson as json
 except ImportError:
     import json
+
 from pprint import pprint
 
+
+class AsanaException(Exception):
+    pass
 
 class AsanaAPI(object):
     """Basic wrapper for the Asana api. For further information on the API
@@ -30,6 +34,34 @@ class AsanaAPI(object):
         s = self.apikey + ":"
         return s.encode("base64").rstrip()
 
+    def handle_exception(self, r):
+        """ Handle exceptions
+
+        :param r: request object
+        :param api_target: API URI path for requests
+        :param data: payload
+        :returns: 1 if exception was 429 (rate limit exceeded), otherwise, -1
+        """
+        if self.debug:
+            print "-> Got: %s" % r.status_code
+            print "-> %s" % r.text
+        if (r.status_code == 429):
+            self._handle_rate_limit(r)
+            return 1
+        else:
+            raise AsanaException('Received non 2xx or 404 status code on call')
+
+    def _handle_rate_limit(self, r):
+        """ Sleep for length of retry time
+
+        :param r: request object
+        """
+        retry_time = int(r.headers['Retry-After'])
+        assert(retry_time > 0)
+        if self.debug:
+            print("-> Sleeping for %i seconds" % retry_time)
+        time.sleep(retry_time)
+
     def _asana(self, api_target):
         """Peform a GET request
 
@@ -45,10 +77,8 @@ class AsanaAPI(object):
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
-            if self.debug:
-                print "-> Got: %s" % r.status_code
-                print "-> %s" % r.text
-            raise Exception('Received non 2xx or 404 status code on call')
+            if (self.handle_exception(r) > 0):
+                self._asana(api_target)
 
     def _asana_post(self, api_target, data):
         """Peform a POST request
@@ -68,10 +98,8 @@ class AsanaAPI(object):
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
-            if self.debug:
-                print "-> Got: %s" % r.status_code
-                print "-> %s" % r.text
-            raise Exception("Asana API error: %s" % r.text)
+            if (self.handle_exception(r) > 0):
+                self._asana_post(api_target, data)
 
     def _asana_put(self, api_target, data):
         """Peform a PUT request
@@ -91,10 +119,8 @@ class AsanaAPI(object):
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
-            if self.debug:
-                print "-> Got: %s" % r.status_code
-                print "-> %s" % r.text
-            raise Exception("Asana API error: %s" % r.text)
+            if (self.handle_exception(r) > 0):
+                self._asana_put(api_target, data)
 
     @classmethod
     def _ok_status(cls, status_code):

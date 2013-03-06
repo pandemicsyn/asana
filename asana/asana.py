@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import requests
 import time
+import urllib
+import urllib2
 
 try:
     import simplejson as json
@@ -31,23 +32,27 @@ class AsanaAPI(object):
         return s.encode("base64").rstrip()
 
     def _asana(self, api_target):
-        """Peform a GET request
+        """Peform a GET request using urllib2
 
         :param api_target: API URI path for request
         """
         target = "/".join([self.aurl, api_target])
         if self.debug:
             print "-> Calling: %s" % target
-        r = requests.get(target, auth=(self.apikey, ""))
-        if self._ok_status(r.status_code) and r.status_code is not 404:
-            if r.headers['content-type'].split(';')[0] == 'application/json':
-                return json.loads(r.text)['data']
+        req = urllib2.Request(target)
+        req.add_header("Authorization", "Basic %s" % self.bauth)
+        r = urllib2.urlopen(req)
+        headers = r.info().dict
+        text = r.read()
+        if self._ok_status(r.code) and r.code is not 404:
+            if headers['content-type'].split(';')[0] == 'application/json':
+                return json.loads(text)['data']
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
             if self.debug:
-                print "-> Got: %s" % r.status_code
-                print "-> %s" % r.text
+                print "-> Got: %s" % r.code
+                print "-> %s" % text
             raise Exception('Received non 2xx or 404 status code on call')
 
     def _asana_post(self, api_target, data):
@@ -61,16 +66,20 @@ class AsanaAPI(object):
             print "-> Posting to: %s" % target
             print "-> Post payload:"
             pprint(data)
-        r = requests.post(target, auth=(self.apikey, ""), data=data)
-        if self._ok_status(r.status_code) and r.status_code is not 404:
-            if r.headers['content-type'].split(';')[0] == 'application/json':
-                return json.loads(r.text)['data']
+        req = urllib2.Request(target, urllib.urlencode(data))
+        req.add_header("Authorization", "Basic %s" % self.bauth)
+        r = urllib2.urlopen(req)
+        headers = r.info().dict
+        text = r.read()
+        if self._ok_status(r.code) and r.code is not 404:
+            if headers['content-type'].split(';')[0] == 'application/json':
+                return json.loads(text)['data']
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
             if self.debug:
-                print "-> Got: %s" % r.status_code
-                print "-> %s" % r.text
+                print "-> Got: %s" % r.code
+                print "-> %s" % text
             raise Exception("Asana API error: %s" % r.text)
 
     def _asana_put(self, api_target, data):
@@ -84,16 +93,21 @@ class AsanaAPI(object):
             print "-> PUTting to: %s" % target
             print "-> PUT payload:"
             pprint(data)
-        r = requests.put(target, auth=(self.apikey, ""), data=data)
-        if self._ok_status(r.status_code) and r.status_code is not 404:
-            if r.headers['content-type'].split(';')[0] == 'application/json':
-                return json.loads(r.text)['data']
+        req = urllib2.Request(target, urllib.urlencode(data))
+        req.add_header("Authorization", "Basic %s" % self.bauth)
+        req.get_method = lambda: 'PUT'
+        r = urllib2.urlopen(req)
+        headers = r.info().dict
+        text = r.read()
+        if self._ok_status(r.code) and r.code is not 404:
+            if headers['content-type'].split(';')[0] == 'application/json':
+                return json.loads(text)['data']
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
             if self.debug:
-                print "-> Got: %s" % r.status_code
-                print "-> %s" % r.text
+                print "-> Got: %s" % r.code
+                print "-> %s" % text
             raise Exception("Asana API error: %s" % r.text)
 
     @classmethod

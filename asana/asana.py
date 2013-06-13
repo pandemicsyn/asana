@@ -380,7 +380,7 @@ class AsanaAPI(object):
         """Create tag
 
         :param tag_name: name of the tag to be created
-        :param workspace : id# of workspace in which tag is to be created
+        :param workspace: id# of workspace in which tag is to be created
         """
         payload = {'name': tag, 'workspace': workspace}
 

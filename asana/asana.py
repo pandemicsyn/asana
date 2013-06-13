@@ -177,7 +177,7 @@ class AsanaAPI(object):
     def get_subtasks(self, task_id):
         """Get subtasks associated with a given task
 
-        :param task_id id# of task"""
+        :param task_id: id# of task"""
         return self._asana("tasks/%d/subtasks" % task_id)
 
     def list_projects(self, workspace=None):
@@ -285,6 +285,14 @@ class AsanaAPI(object):
             payload['notes'] = notes
 
         return self._asana_put('tasks/%s' % task, payload)
+
+    def add_parent(self, task_id, parent_id):
+        """Set the parent for an existing task.
+
+        :param task_id: id# of a task
+        :param parent_id: id# of a parent task
+        """
+        self._asana_post('tasks/%s/setParent' % task_id, {'parent': parent_id})
 
     def create_project(self, name, workspace, notes=None, archived=False):
         """Create a new project

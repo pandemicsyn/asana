@@ -11,6 +11,8 @@ This project is a work in progress. Here's what's currently available:
 - create_project
 - create_tag
 - create_task
+- add_parent
+- create_subtask
 - get_basic_auth
 - get_project
 - get_project_tasks

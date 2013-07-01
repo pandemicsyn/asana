@@ -74,7 +74,12 @@ class AsanaAPI(object):
         r = requests.get(target, auth=(self.apikey, ""))
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
-                return json.loads(r.text)['data']
+                if hasattr(r, 'text'):
+                    return json.loads(r.text)['data']
+                elif hasattr(r, 'content'):
+                    return json.loads(r.content)['data']
+                else:
+                    raise Exception('Unknown format in response from api')
             else:
                 raise Exception('Did not receive json from api: %s' % str(r))
         else:
@@ -293,9 +298,11 @@ class AsanaAPI(object):
         :param task_id: id# of a task
         :param parent_id: id# of a parent task
         """
-        return self._asana_post('tasks/%s/setParent' % task_id, {'parent': parent_id})
+        return self._asana_post('tasks/%s/setParent' % task_id,
+                                {'parent': parent_id})
 
-    def create_subtask(self, parent_id, name, completed=False, assignee=None, notes=None, followers=None):
+    def create_subtask(self, parent_id, name, completed=False, assignee=None,
+                       notes=None, followers=None):
         """Creates a task and sets it's parent.
         There is one noticeable distinction between
         creating task and assigning it a parent and

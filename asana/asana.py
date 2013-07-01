@@ -234,8 +234,9 @@ class AsanaAPI(object):
         :param followers: Optional followers for task
         :param notes: Optional notes to add to task
         """
-        payload = {'assignee': assignee or 'me', 'name': name,
-                   'workspace': workspace}
+        payload = {'name': name, 'workspace': workspace}
+        if assignee:
+            payload['assignee'] = assignee
         if assignee_status in ['inbox', 'later', 'today', 'upcoming']:
             payload['assignee_status'] = assignee_status
         if completed:

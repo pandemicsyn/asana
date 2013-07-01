@@ -293,7 +293,30 @@ class AsanaAPI(object):
         :param task_id: id# of a task
         :param parent_id: id# of a parent task
         """
-        self._asana_post('tasks/%s/setParent' % task_id, {'parent': parent_id})
+        return self._asana_post('tasks/%s/setParent' % task_id, {'parent': parent_id})
+
+    def create_subtask(self, parent_id, name, completed=False, assignee=None, notes=None, followers=None):
+        """Creates a task and sets it's parent.
+        There is one noticeable distinction between
+        creating task and assigning it a parent and
+        creating a subtask. Latter doesn't get reflected
+        in the project task list. Only in the parent task description.
+        So using this method you can avoid polluting task list with subtasks.
+
+        :param parent_id: id# of a task that subtask will be assigned to
+        :param name: subtask name
+        :param assignee: Optional user id# of subtask assignee
+        :param notes: Optional subtask description
+        :param followers: Optional followers for subtask"""
+        payload = {'assignee': assignee or 'me', 'name': name}
+        if followers:
+            for pos, person in enumerate(followers):
+                payload['followers[%d]' % pos] = person
+        if notes:
+            payload['notes'] = notes
+        if completed:
+            payload['completed'] = 'true'
+        return self._asana_post('tasks/%s/subtasks' % parent_id, payload)
 
     def create_project(self, name, workspace, notes=None, archived=False):
         """Create a new project

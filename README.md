@@ -19,6 +19,8 @@ This project is a work in progress. Here's what's currently available:
 - get_story
 - get_subtasks
 - get_tag_tasks
+- rm_tag_task
+- get_task_tags
 - get_tags
 - get_task
 - list_projects

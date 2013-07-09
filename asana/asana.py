@@ -401,6 +401,21 @@ class AsanaAPI(object):
         """
         return self._asana_post('tasks/%d/addTag' % task_id, {'tag': tag_id})
 
+    def rm_tag_task(self, task_id, tag_id):
+        """Remove a tag from a task.
+
+        :param task_id: id# of task
+        :param tag_id: id# of tag to remove
+        """
+        return self._asana_post('tasks/%d/removeTag' % task_id, {'tag': tag_id})
+
+    def get_task_tags(self, task_id):
+        """List tags that are associated with a task.
+
+        :param task_id: id# of task
+        """
+        return self._asana('tasks/%d/tags' % task_id)
+
     def get_tags(self, workspace):
         """Get available tags for workspace
 

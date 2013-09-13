@@ -164,15 +164,17 @@ class AsanaAPI(object):
             else:
                 return self._asana('users')
 
-    def list_tasks(self, workspace, assignee, include_archived="false"):
+    def list_tasks(self, workspace, assignee, include_archived=False):
         """List tasks
 
         :param workspace: workspace id
         :param assignee: assignee
-        :param include_archived: true or false string to include archived
+        :param include_archived: true to include archived tasks
         """
         # Sanitise our include_archived variable
-        if include_archived not in ["true", "false"]:
+        if include_archived:
+            include_archived = "true"
+        else:
             include_archived = "false"
         target = "tasks?workspace=%d&assignee=%s&include_archived=%s" % (
             workspace, assignee, include_archived)
@@ -206,14 +208,16 @@ class AsanaAPI(object):
         """
         return self._asana('projects/%d' % project_id)
 
-    def get_project_tasks(self, project_id, include_archived="false"):
+    def get_project_tasks(self, project_id, include_archived=False):
         """Get project tasks
 
         :param project_id: id# of project
-        :param include_archived: true or false string to include archived
+        :param include_archived: true to include archived tasks
         """
         # Sanitise our include_archived variable
-        if include_archived not in ["true", "false"]:
+        if include_archived:
+            include_archived = "true"
+        else:
             include_archived = "false"
         return self._asana('projects/%d/tasks?include_archived=%s' % (
             project_id, include_archived))

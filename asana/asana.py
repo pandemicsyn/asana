@@ -316,7 +316,8 @@ class AsanaAPI(object):
                                 {'parent': parent_id})
 
     def create_subtask(self, parent_id, name, completed=False, assignee=None,
-                       notes=None, followers=None):
+                       notes=None, followers=None, assignee_status=None,
+                       due_on=None):
         """Creates a task and sets it's parent.
         There is one noticeable distinction between
         creating task and assigning it a parent and
@@ -328,8 +329,12 @@ class AsanaAPI(object):
         :param name: subtask name
         :param assignee: Optional user id# of subtask assignee
         :param notes: Optional subtask description
-        :param followers: Optional followers for subtask"""
-        payload = {'assignee': assignee or 'me', 'name': name}
+        :param followers: Optional followers for subtask
+        :param assignee_status: Optional status for assignee
+        :param due_on: Due date in format YYYY-MM-DD"""
+        payload = {'name': name}
+        if assignee:
+            payload['assignee'] = assignee
         if followers:
             for pos, person in enumerate(followers):
                 payload['followers[%d]' % pos] = person
@@ -337,6 +342,14 @@ class AsanaAPI(object):
             payload['notes'] = notes
         if completed:
             payload['completed'] = 'true'
+        if assignee_status in ['inbox', 'later', 'today', 'upcoming']:
+            payload['assignee_status'] = assignee_status
+        if due_on:
+            try:
+                time.strptime(due_on, '%Y-%m-%d')
+                payload['due_on'] = due_on
+            except ValueError:
+                raise Exception('Bad task due date: %s' % due_on)
         return self._asana_post('tasks/%s/subtasks' % parent_id, payload)
 
     def create_project(self, name, workspace, notes=None, archived=False):

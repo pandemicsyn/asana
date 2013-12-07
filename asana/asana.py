@@ -4,6 +4,11 @@ import requests
 import time
 
 try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib import quote
+
+try:
     import simplejson as json
 except ImportError:
     import json
@@ -12,6 +17,7 @@ from pprint import pprint
 
 
 class AsanaException(Exception):
+    """Wrap api specific errors"""
     pass
 
 
@@ -68,7 +74,8 @@ class AsanaAPI(object):
 
         :param api_target: API URI path for request
         """
-        target = "/".join([self.aurl, api_target])
+        # TODO: Refactor to use requests.get params
+        target = "/".join([self.aurl, quote(api_target, safe="/&=?")])
         if self.debug:
             print "-> Calling: %s" % target
         r = requests.get(target, auth=(self.apikey, ""))
@@ -434,7 +441,8 @@ class AsanaAPI(object):
         :param task_id: id# of task
         :param tag_id: id# of tag to remove
         """
-        return self._asana_post('tasks/%d/removeTag' % task_id, {'tag': tag_id})
+        return self._asana_post('tasks/%d/removeTag' %
+                                task_id, {'tag': tag_id})
 
     def get_task_tags(self, task_id):
         """List tags that are associated with a task.

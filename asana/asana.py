@@ -93,18 +93,24 @@ class AsanaAPI(object):
             if (self.handle_exception(r) > 0):
                 self._asana(api_target)
 
-    def _asana_post(self, api_target, data):
+    def _asana_post(self, api_target, data=None, files=None):
         """Peform a POST request
 
         :param api_target: API URI path for request
         :param data: POST payload
+        :param files: Optional file to upload
         """
         target = "/".join([self.aurl, api_target])
         if self.debug:
             print "-> Posting to: %s" % target
-            print "-> Post payload:"
-            pprint(data)
-        r = requests.post(target, auth=(self.apikey, ""), data=data)
+            if data:
+                print "-> Post payload:"
+                pprint(data)
+            if files:
+                print "-> Posting file:"
+                pprint(files)
+        r = requests.post(
+            target, auth=(self.apikey, ""), data=data, files=files)
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
                 return json.loads(r.text)['data']
@@ -247,8 +253,18 @@ class AsanaAPI(object):
         """List workspaces"""
         return self._asana('workspaces')
 
+    def organization_teams(self, org_id):
+        """Show all `teams <http://developer.asana.com/documentation/#teams>`
+        you're member of in an
+        `organization <https://asana.com/guide/workspaces/organizations>`.
+
+        :param org_id organization id#
+        """
+        return self._asana('organizations/%d/teams' % org_id)
+
     def create_task(self, name, workspace, assignee=None, assignee_status=None,
-                    completed=False, due_on=None, followers=None, notes=None):
+                    completed=False, due_on=None, followers=None, notes=None,
+                    projects=None):
         """Create a new task
 
         :param name: Name of task
@@ -259,6 +275,7 @@ class AsanaAPI(object):
         :param due_on: Optional due date for task
         :param followers: Optional followers for task
         :param notes: Optional notes to add to task
+        :param projects: Array of projects this task is associated with.
         """
         payload = {'name': name, 'workspace': workspace}
         if assignee:
@@ -276,6 +293,9 @@ class AsanaAPI(object):
         if followers:
             for pos, person in enumerate(followers):
                 payload['followers[%d]' % pos] = person
+        if projects:
+            for pos, project in enumerate(projects):
+                payload['projects[%d]' % pos] = project
         if notes:
             payload['notes'] = notes
 
@@ -312,6 +332,32 @@ class AsanaAPI(object):
             payload['notes'] = notes
 
         return self._asana_put('tasks/%s' % task, payload)
+
+    def task_attachments(self, task_id):
+        """Showing all attachments on a task.
+
+        :param task_id: id# of a task
+        """
+        return self._asana('tasks/%d/attachments' % task_id)
+
+    def get_attachment(self, attachment_id):
+        """This method returns the full record for a single attachment.
+
+        :param attachment_id: id# of an attachment
+        """
+        return self._asana('attachments/%d' % attachment_id)
+
+    def upload_attachment(self, task_id, file_name, stream):
+        """This method uploads an attachment to a task.
+
+        :param task_id: id# of an a task
+        :param file_name: attachment's file name
+        :param stream: open file handle
+        """
+        return self._asana_post(
+            'tasks/%d/attachments' % task_id,
+            files={'file': (file_name, stream)}
+        )
 
     def add_parent(self, task_id, parent_id):
         """Set the parent for an existing task.
@@ -359,7 +405,8 @@ class AsanaAPI(object):
                 raise Exception('Bad task due date: %s' % due_on)
         return self._asana_post('tasks/%s/subtasks' % parent_id, payload)
 
-    def create_project(self, name, workspace, notes=None, archived=False):
+    def create_project(self, name, workspace, team,
+                       notes=None, archived=False):
         """Create a new project
 
         :param name: Name of project
@@ -367,7 +414,7 @@ class AsanaAPI(object):
         :param notes: Optional notes to add
         :param archived: Whether or not project is archived (defaults to False)
         """
-        payload = {'name': name, 'workspace': workspace}
+        payload = {'name': name, 'workspace': workspace, 'team': team}
         if notes:
             payload['notes'] = notes
         if archived:

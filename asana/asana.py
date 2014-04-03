@@ -177,7 +177,7 @@ class AsanaAPI(object):
             else:
                 return self._asana('users')
 
-    def list_tasks(self, workspace, assignee, include_archived=False):
+    def list_tasks(self, workspace, assignee, include_archived=False, completed_since=None, modified_since=None):
         """List tasks
 
         :param workspace: workspace id
@@ -191,6 +191,12 @@ class AsanaAPI(object):
             include_archived = "false"
         target = "tasks?workspace=%d&assignee=%s&include_archived=%s" % (
             workspace, assignee, include_archived)
+
+        if completed_since:
+            target += '&completed_since=%s' % completed_since
+        if modified_since:
+            target += '&modified_since=%s' % modified_since
+
         return self._asana(target)
 
     def get_task(self, task_id):

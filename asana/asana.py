@@ -93,6 +93,29 @@ class AsanaAPI(object):
             if (self.handle_exception(r) > 0):
                 self._asana(api_target)
 
+    def _asana_delete(self, api_target):
+        """Peform a DELETE request
+
+        :param api_target: API URI path for request
+        """
+        target = "/".join([self.aurl, quote(api_target, safe="/&=?")])
+        if self.debug:
+            print "-> Calling: %s" % target
+        r = requests.delete(target, auth=(self.apikey, ""))
+        if self._ok_status(r.status_code) and r.status_code is not 404:
+            if r.headers['content-type'].split(';')[0] == 'application/json':
+                if hasattr(r, 'text'):
+                    return json.loads(r.text)['data']
+                elif hasattr(r, 'content'):
+                    return json.loads(r.content)['data']
+                else:
+                    raise Exception('Unknown format in response from api')
+            else:
+                raise Exception('Did not receive json from api: %s' % str(r))
+        else:
+            if (self.handle_exception(r) > 0):
+                self._asana_delete(api_target)
+
     def _asana_post(self, api_target, data=None, files=None):
         """Peform a POST request
 
@@ -444,6 +467,13 @@ class AsanaAPI(object):
         if archived:
             payload['archived'] = 'true'
         return self._asana_put('projects/%s' % project_id, payload)
+
+    def delete_project(self, project_id):
+        """Delete project
+
+        :param project_id: id# of project
+        """
+        return self._asana_delete('projects/%s' % project_id)
 
     def update_workspace(self, workspace_id, name):
         """Update workspace

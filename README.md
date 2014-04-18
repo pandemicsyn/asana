@@ -30,6 +30,7 @@ This project is a work in progress. Here's what's currently available:
 - list_workspaces
 - rm_project_task
 - update_project
+- delete_project
 - update_task
 - update_workspace
 - user_info

@@ -205,11 +205,15 @@ class AsanaAPI(object):
         :param task_id: id# of task"""
         return self._asana("tasks/%d/subtasks" % task_id)
 
-    def list_projects(self, workspace=None, include_archived="true"):
+    def list_projects(self, workspace=None, include_archived=True):
         """"List projects in a workspace
 
         :param workspace: workspace whos projects you want to list
         :param include_archived: defaults True, set to False to exclude """
+        if include_archived:
+            include_archived = "true"
+        else:
+            include_archived = "false"
         target = "projects?archived=%s" %(include_archived)
         if workspace:
             target = "workspaces/%d/" %(workspace)+target

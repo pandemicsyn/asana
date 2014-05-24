@@ -456,12 +456,13 @@ class AsanaAPI(object):
                 raise AsanaException('Bad task due date: %s' % due_on)
         return self._asana_post('tasks/%s/subtasks' % parent_id, payload)
 
-    def create_project(self, name, workspace, team,
+    def create_project(self, name, workspace, team=None,
                        notes=None, archived=False):
         """Create a new project
 
         :param name: Name of project
         :param workspace: Workspace for task
+        :param team: Optional id/name of the team this project is shared with
         :param notes: Optional notes to add
         :param archived: Whether or not project is archived (defaults to False)
         """

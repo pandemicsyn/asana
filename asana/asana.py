@@ -86,12 +86,13 @@ class AsanaAPI(object):
                 elif hasattr(r, 'content'):
                     return json.loads(r.content)['data']
                 else:
-                    raise Exception('Unknown format in response from api')
+                    raise AsanaException('Unknown format in response from api')
             else:
-                raise Exception('Did not receive json from api: %s' % str(r))
+                raise AsanaException(
+                    'Did not receive json from api: %s' % str(r))
         else:
             if (self.handle_exception(r) > 0):
-                self._asana(api_target)
+                return self._asana(api_target)
 
     def _asana_delete(self, api_target):
         """Peform a DELETE request
@@ -109,12 +110,13 @@ class AsanaAPI(object):
                 elif hasattr(r, 'content'):
                     return json.loads(r.content)['data']
                 else:
-                    raise Exception('Unknown format in response from api')
+                    raise AsanaException('Unknown format in response from api')
             else:
-                raise Exception('Did not receive json from api: %s' % str(r))
+                raise AsanaException(
+                    'Did not receive json from api: %s' % str(r))
         else:
             if (self.handle_exception(r) > 0):
-                self._asana_delete(api_target)
+                return self._asana_delete(api_target)
 
     def _asana_post(self, api_target, data=None, files=None):
         """Peform a POST request
@@ -136,12 +138,18 @@ class AsanaAPI(object):
             target, auth=(self.apikey, ""), data=data, files=files)
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
-                return json.loads(r.text)['data']
+                if hasattr(r, 'text'):
+                    return json.loads(r.text)['data']
+                elif hasattr(r, 'content'):
+                    return json.loads(r.content)['data']
+                else:
+                    raise AsanaException('Unknown format in response from api')
             else:
-                raise Exception('Did not receive json from api: %s' % str(r))
+                raise AsanaException(
+                    'Did not receive json from api: %s' % str(r))
         else:
             if (self.handle_exception(r) > 0):
-                self._asana_post(api_target, data)
+                return self._asana_post(api_target, data)
 
     def _asana_put(self, api_target, data):
         """Peform a PUT request
@@ -157,16 +165,23 @@ class AsanaAPI(object):
         r = requests.put(target, auth=(self.apikey, ""), data=data)
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
-                return json.loads(r.text)['data']
+                if hasattr(r, 'text'):
+                    return json.loads(r.text)['data']
+                elif hasattr(r, 'content'):
+                    return json.loads(r.content)['data']
+                else:
+                    raise AsanaException('Unknown format in response from api')
             else:
-                raise Exception('Did not receive json from api: %s' % str(r))
+                raise AsanaException(
+                    'Did not receive json from api: %s' % str(r))
         else:
             if (self.handle_exception(r) > 0):
-                self._asana_put(api_target, data)
+                return self._asana_put(api_target, data)
 
     @classmethod
     def _ok_status(cls, status_code):
         """Check whether status_code is a ok status i.e. 2xx or 404"""
+        status_code = int(status_code)
         if status_code / 200 is 1:
             return True
         elif status_code / 400 is 1:
@@ -200,7 +215,8 @@ class AsanaAPI(object):
             else:
                 return self._asana('users')
 
-    def list_tasks(self, workspace, assignee, include_archived=False, completed_since=None, modified_since=None):
+    def list_tasks(self, workspace, assignee, include_archived=False,
+                   completed_since=None, modified_since=None):
         """List tasks
 
         :param workspace: workspace id
@@ -243,9 +259,9 @@ class AsanaAPI(object):
             include_archived = "true"
         else:
             include_archived = "false"
-        target = "projects?archived=%s" %(include_archived)
+        target = "projects?archived=%s" % (include_archived)
         if workspace:
-            target = "workspaces/%d/" %(workspace)+target
+            target = "workspaces/%d/" % (workspace) + target
 
         return self._asana(target)
 
@@ -324,7 +340,7 @@ class AsanaAPI(object):
                 time.strptime(due_on, '%Y-%m-%d')
                 payload['due_on'] = due_on
             except ValueError:
-                raise Exception('Bad task due date: %s' % due_on)
+                raise AsanaException('Bad task due date: %s' % due_on)
         if followers:
             for pos, person in enumerate(followers):
                 payload['followers[%d]' % pos] = person
@@ -362,7 +378,7 @@ class AsanaAPI(object):
                 time.strptime(due_on, '%Y-%m-%d')
                 payload['due_on'] = due_on
             except ValueError:
-                raise Exception('Bad task due date: %s' % due_on)
+                raise AsanaException('Bad task due date: %s' % due_on)
         if notes:
             payload['notes'] = notes
 
@@ -437,15 +453,16 @@ class AsanaAPI(object):
                 time.strptime(due_on, '%Y-%m-%d')
                 payload['due_on'] = due_on
             except ValueError:
-                raise Exception('Bad task due date: %s' % due_on)
+                raise AsanaException('Bad task due date: %s' % due_on)
         return self._asana_post('tasks/%s/subtasks' % parent_id, payload)
 
-    def create_project(self, name, workspace, team,
+    def create_project(self, name, workspace, team=None,
                        notes=None, archived=False):
         """Create a new project
 
         :param name: Name of project
         :param workspace: Workspace for task
+        :param team: Optional id/name of the team this project is shared with
         :param notes: Optional notes to add
         :param archived: Whether or not project is archived (defaults to False)
         """

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import requests
 import time
 
@@ -50,8 +52,8 @@ class AsanaAPI(object):
         :returns: 1 if exception was 429 (rate limit exceeded), otherwise, -1
         """
         if self.debug:
-            print "-> Got: %s" % r.status_code
-            print "-> %s" % r.text
+            print("-> Got: {0}", r.status_code)
+            print("-> {0}", r.text)
         if (r.status_code == 429):
             self._handle_rate_limit(r)
             return 1
@@ -66,7 +68,7 @@ class AsanaAPI(object):
         retry_time = int(r.headers['Retry-After'])
         assert(retry_time > 0)
         if self.debug:
-            print("-> Sleeping for %i seconds" % retry_time)
+            print("-> Sleeping for {0} seconds", retry_time)
         time.sleep(retry_time)
 
     def _asana(self, api_target):
@@ -77,7 +79,7 @@ class AsanaAPI(object):
         # TODO: Refactor to use requests.get params
         target = "/".join([self.aurl, quote(api_target, safe="/&=?")])
         if self.debug:
-            print "-> Calling: %s" % target
+            print("-> Calling: {0}", target)
         r = requests.get(target, auth=(self.apikey, ""))
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
@@ -101,7 +103,7 @@ class AsanaAPI(object):
         """
         target = "/".join([self.aurl, quote(api_target, safe="/&=?")])
         if self.debug:
-            print "-> Calling: %s" % target
+            print("-> Calling: {0}", target)
         r = requests.delete(target, auth=(self.apikey, ""))
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
@@ -127,12 +129,12 @@ class AsanaAPI(object):
         """
         target = "/".join([self.aurl, api_target])
         if self.debug:
-            print "-> Posting to: %s" % target
+            print("-> Posting to: {0}", target)
             if data:
-                print "-> Post payload:"
+                print("-> Post payload:")
                 pprint(data)
             if files:
-                print "-> Posting file:"
+                print("-> Posting file:")
                 pprint(files)
         r = requests.post(
             target, auth=(self.apikey, ""), data=data, files=files)
@@ -159,8 +161,8 @@ class AsanaAPI(object):
         """
         target = "/".join([self.aurl, api_target])
         if self.debug:
-            print "-> PUTting to: %s" % target
-            print "-> PUT payload:"
+            print("-> PUTting to: {0}", target)
+            print("-> PUT payload:")
             pprint(data)
         r = requests.put(target, auth=(self.apikey, ""), data=data)
         if self._ok_status(r.status_code) and r.status_code is not 404:

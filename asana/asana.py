@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-
+import base64
 import requests
+import six
 import time
 
 try:
@@ -40,8 +41,8 @@ class AsanaAPI(object):
         """Get basic auth creds
         :returns: the basic auth string
         """
-        s = self.apikey + ":"
-        return s.encode("base64").rstrip()
+        s = six.b(self.apikey + ":")
+        return base64.b64encode(s).rstrip()
 
     def handle_exception(self, r):
         """ Handle exceptions

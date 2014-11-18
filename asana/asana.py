@@ -314,7 +314,7 @@ class AsanaAPI(object):
         return self._asana('organizations/%d/teams' % org_id)
 
     def create_task(self, name, workspace, assignee=None, assignee_status=None,
-                    completed=False, due_on=None, followers=None, notes=None,
+                    completed=None, due_on=None, followers=None, notes=None,
                     projects=None):
         """Create a new task
 
@@ -333,8 +333,8 @@ class AsanaAPI(object):
             payload['assignee'] = assignee
         if assignee_status in ['inbox', 'later', 'today', 'upcoming']:
             payload['assignee_status'] = assignee_status
-        if completed:
-            payload['completed'] = 'true'
+        if completed is not None:
+            payload['completed'] = int(completed)
         if due_on:
             try:
                 time.strptime(due_on, '%Y-%m-%d')
@@ -353,7 +353,7 @@ class AsanaAPI(object):
         return self._asana_post('tasks', payload)
 
     def update_task(self, task, name=None, assignee=None, assignee_status=None,
-                    completed=False, due_on=None, notes=None):
+                    completed=None, due_on=None, notes=None):
         """Update an existing task
 
         :param task: task to update
@@ -371,8 +371,8 @@ class AsanaAPI(object):
             payload['assignee'] = assignee
         if assignee_status:
             payload['assignee_status'] = assignee_status
-        if completed:
-            payload['completed'] = completed
+        if completed is not None:
+            payload['completed'] = int(completed)
         if due_on:
             try:
                 time.strptime(due_on, '%Y-%m-%d')
@@ -419,7 +419,7 @@ class AsanaAPI(object):
         return self._asana_post('tasks/%s/setParent' % task_id,
                                 {'parent': parent_id})
 
-    def create_subtask(self, parent_id, name, completed=False, assignee=None,
+    def create_subtask(self, parent_id, name, completed=None, assignee=None,
                        notes=None, followers=None, assignee_status=None,
                        due_on=None):
         """Creates a task and sets it's parent.
@@ -444,8 +444,8 @@ class AsanaAPI(object):
                 payload['followers[%d]' % pos] = person
         if notes:
             payload['notes'] = notes
-        if completed:
-            payload['completed'] = 'true'
+        if completed is not None:
+            payload['completed'] = int(completed)
         if assignee_status in ['inbox', 'later', 'today', 'upcoming']:
             payload['assignee_status'] = assignee_status
         if due_on:
@@ -457,7 +457,7 @@ class AsanaAPI(object):
         return self._asana_post('tasks/%s/subtasks' % parent_id, payload)
 
     def create_project(self, name, workspace, team=None,
-                       notes=None, archived=False):
+                       notes=None, archived=None):
         """Create a new project
 
         :param name: Name of project
@@ -469,12 +469,12 @@ class AsanaAPI(object):
         payload = {'name': name, 'workspace': workspace, 'team': team}
         if notes:
             payload['notes'] = notes
-        if archived:
-            payload['archived'] = 'true'
+        if archived is not None:
+            payload['archived'] = int(archived)
         return self._asana_post('projects', payload)
 
     def update_project(self, project_id, name=None, notes=None,
-                       archived=False):
+                       archived=None):
         """Update project
 
         :param project_id: id# of project
@@ -487,8 +487,8 @@ class AsanaAPI(object):
             payload['name'] = name
         if notes:
             payload['notes'] = notes
-        if archived:
-            payload['archived'] = 'true'
+        if archived is not None:
+            payload['archived'] = int(archived)
         return self._asana_put('projects/%s' % project_id, payload)
 
     def delete_project(self, project_id):

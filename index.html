@@ -1,91 +1,118 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="python-asana : Python Asana API binding and sample cli " />
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    <title>python-asana</title>
+    <title>python-asana by pandemicsyn</title>
   </head>
 
   <body>
+    <header>
+      <div class="inner">
+        <h1>python-asana</h1>
+        <h2>Python Asana API binding and sample cli </h2>
+        <a href="https://github.com/pandemicsyn/asana" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/pandemicsyn/asana">View on GitHub</a>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="asana-python-api" class="anchor" href="#asana-python-api" aria-hidden="true"><span class="octicon octicon-link"></span></a>Asana python api</h1>
 
-          <h1 id="project_title">python-asana</h1>
-          <h2 id="project_tagline">Python Asana API binding and sample cli </h2>
+<p>python wrapper for the <a href="http://asana.com">Asana API</a></p>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/pandemicsyn/asana/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/pandemicsyn/asana/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+<p>Documentation is available at: <a href="http://asana.readthedocs.org/en/latest/index.html">AsanaAPI</a></p>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>Asana python api &amp; CLI</h1>
-
-<p>python wrapper for the <a href="http://asana.com">Asana API</a> and a sample CLI tool for 
-<a href="http://asana.com">Asana</a> itself.</p>
-
-<p>A work in progress. Working so far:</p>
+<p>This project is a work in progress. Here's what's currently available:</p>
 
 <ul>
-<li>get_user_info</li>
-<li>list_users</li>
-<li>list_tasks</li>
-<li>get_task</li>
-<li>list_projects</li>
+<li>add_project_task</li>
+<li>add_story</li>
+<li>add_tag_task</li>
+<li>create_project</li>
+<li>create_tag</li>
+<li>create_task</li>
+<li>add_parent</li>
+<li>create_subtask</li>
+<li>get_basic_auth</li>
 <li>get_project</li>
 <li>get_project_tasks</li>
-<li>list_stories</li>
 <li>get_story</li>
+<li>get_subtasks</li>
+<li>get_tag_tasks</li>
+<li>rm_tag_task</li>
+<li>get_task_tags</li>
+<li>get_tags</li>
+<li>get_task</li>
+<li>list_projects</li>
+<li>list_stories</li>
+<li>list_tasks</li>
+<li>list_users</li>
 <li>list_workspaces</li>
-<li>create_task</li>
-<li>update_task</li>
-<li>create_project</li>
-<li>update_project*</li>
-<li>update_workspace*</li>
-<li>add_project_task</li>
 <li>rm_project_task</li>
-<li>add_story</li>
-</ul><p>Todo:</p>
+<li>update_project</li>
+<li>delete_project</li>
+<li>update_task</li>
+<li>update_workspace</li>
+<li>user_info</li>
+</ul>
+
+<p>Todo:</p>
 
 <ul>
 <li>All the things!</li>
-<li>Especially error and response checkings.</li>
-</ul><p>Sample:</p>
+<li>unittests</li>
+<li>Better error handling</li>
+</ul>
 
-<pre><code>from asana import AsanaAPI()
-asana = AsanaAPI('YourAsanaAPIKey', debug=True)
-myspaces = asana.list_workspaces()  #Result: [{u'id': 123456789, u'name': u'asanapy'}]
-#create a new project
-asana.create_project('test project', 'notes for test project', myspaces[0]['id'])
-#create a new task
-asana.create_task('yetanotherapitest', myspaces[0]['id'], assignee_status='later', notes='some notes')
-#add a story to task
-asana.add_story(mytask, 'omgwtfbbq')
+<p>Sample:</p>
+
+<pre><code>from asana import asana
+asana_api = asana.AsanaAPI('YourAsanaAPIKey', debug=True)
+
+# see your workspaces
+myspaces = asana_api.list_workspaces()  #Result: [{u'id': 123456789, u'name': u'asanapy'}]
+
+# create a new project
+asana_api.create_project('test project', myspaces[0]['id'])
+
+# create a new task
+asana_api.create_task('yetanotherapitest', myspaces[0]['id'], assignee_status='later', notes='some notes')
+
+# add a story to task
+asana_api.add_story(mytask, 'omgwtfbbq')
 </code></pre>
-      </section>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/pandemicsyn/asana/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/pandemicsyn/asana/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/pandemicsyn/asana"></a> is maintained by <a href="https://github.com/pandemicsyn">pandemicsyn</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">python-asana maintained by <a href="https://github.com/pandemicsyn">pandemicsyn</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
+  
   </body>
 </html>

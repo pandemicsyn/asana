@@ -1,4 +1,6 @@
-# Asana python api 
+# Asana python api - ![unmaintained](http://img.shields.io/badge/status-unmaintained-red.png)
+
+**Asana now has official [python bindings](https://github.com/Asana/python-asana) its also important to note that Asana took over the "asana" pypi name.**
 
 python wrapper for the [Asana API](http://asana.com)
 
